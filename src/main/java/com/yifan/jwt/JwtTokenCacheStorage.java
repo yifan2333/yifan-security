@@ -3,7 +3,7 @@ package com.yifan.jwt;
 /**
  * The type Jwt token cache storage.
  *
- * @author Dax
+ * @author wuyifan
  * @since 13 :28  2018/9/21
  */
 public class JwtTokenCacheStorage implements JwtTokenStorage {

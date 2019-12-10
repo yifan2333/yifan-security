@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 /**
  * 构建 jwt payload
  *
- * @author Felordcn
+ * @author wuyifan
  * @since 11:27 2019/10/25
  **/
 public class JwtPayloadBuilder {
