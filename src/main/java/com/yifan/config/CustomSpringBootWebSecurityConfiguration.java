@@ -22,6 +22,8 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.yifan.entrypoint.SimpleAccessDeniedHandler;
+import com.yifan.entrypoint.SimpleAuthenticationEntryPoint;
 import com.yifan.filter.JsonLoginPostProcessor;
 import com.yifan.filter.LoginPostProcessor;
 import com.yifan.filter.PreLoginFilter;
@@ -125,6 +127,8 @@ public class CustomSpringBootWebSecurityConfiguration {
 //                    .successForwardUrl("/login/success")
 //                    .failureForwardUrl("/login/failure")
                     .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler)
+                    .and()
+                    .exceptionHandling().accessDeniedHandler(new SimpleAccessDeniedHandler()).authenticationEntryPoint(new SimpleAuthenticationEntryPoint())
                     .and()
                     .logout()
                     .addLogoutHandler(new CustomLogoutHandler())
