@@ -22,8 +22,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.yifan.entrypoint.SimpleAccessDeniedHandler;
-import com.yifan.entrypoint.SimpleAuthenticationEntryPoint;
 import com.yifan.filter.JsonLoginPostProcessor;
 import com.yifan.filter.LoginPostProcessor;
 import com.yifan.filter.PreLoginFilter;
@@ -118,6 +116,10 @@ public class CustomSpringBootWebSecurityConfiguration {
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
                     .cors()
+                    // 这个配置在用户没有认证或者没有授权时可以返回错误码以及对应的信息
+                    // 我们测试需要如果没有认证的话需要跳转form表单登录页面,就先删除
+//                    .and()
+//                    .exceptionHandling().accessDeniedHandler(new SimpleAccessDeniedHandler()).authenticationEntryPoint(new SimpleAuthenticationEntryPoint())
                     .and()
                     .authorizeRequests().anyRequest().authenticated()
                     .and()
@@ -127,8 +129,6 @@ public class CustomSpringBootWebSecurityConfiguration {
 //                    .successForwardUrl("/login/success")
 //                    .failureForwardUrl("/login/failure")
                     .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler)
-                    .and()
-                    .exceptionHandling().accessDeniedHandler(new SimpleAccessDeniedHandler()).authenticationEntryPoint(new SimpleAuthenticationEntryPoint())
                     .and()
                     .logout()
                     .addLogoutHandler(new CustomLogoutHandler())
