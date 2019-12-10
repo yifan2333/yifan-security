@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * JwtTokenGenerator
  *
- * @author Felordcn
+ * @author wuyifan
  * @since 15 :26 2019/10/25
  */
 @Slf4j

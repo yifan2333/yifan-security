@@ -7,7 +7,7 @@ import lombok.Data;
 /**
  * JwtTokenPair
  *
- * @author Felordcn
+ * @author wuyifan
  * @since 16:09 2019/10/25
  **/
 @Data

@@ -3,7 +3,7 @@ package com.yifan.jwt;
 /**
  * jwt token storage
  *
- * @author Dax
+ * @author wuyifan
  * @since 13 :25  2018/9/21
  */
 public interface JwtTokenStorage {

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Dax
+ * @author wuyifan
  * @since 13:41  2019-04-09
  */
 public class RequestUtil {
@@ -24,8 +24,6 @@ public class RequestUtil {
      * @return body str
      */
     public static String obtainBody(ServletRequest request) {
-
-
         BufferedReader br = null;
         StringBuilder sb = new StringBuilder();
         try {

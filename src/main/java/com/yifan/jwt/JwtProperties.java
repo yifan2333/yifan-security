@@ -9,7 +9,7 @@ import static com.yifan.jwt.JwtProperties.JWT_PREFIX;
 /**
  * Jwt 在 springboot application.yml 中的配置文件
  *
- * @author Felordcn
+ * @author wuyifan
  * @since 15 :06 2019/10/25
  */
 @Data
