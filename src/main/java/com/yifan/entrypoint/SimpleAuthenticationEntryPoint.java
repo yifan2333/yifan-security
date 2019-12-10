@@ -16,7 +16,7 @@ import com.yifan.utils.ResponseUtils;
 
 /** 
  * AuthenticationException 是在用户认证的时候出现错误时抛出的异常
- *系统用户不存在，被锁定，凭证失效，密码错误等认证过程中出现的异常都由 AuthenticationException 处理。
+ * 系统用户不存在，被锁定，凭证失效，密码错误等认证过程中出现的异常都由 AuthenticationException 处理。 401
  *
  * @author: wuyifan
  * @since: 2019年12月10日 下午3:11

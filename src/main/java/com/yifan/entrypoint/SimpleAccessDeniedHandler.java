@@ -15,7 +15,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import com.yifan.utils.ResponseUtils;
 
 /** 
- * AccessDeniedException 主要是在用户在访问受保护资源时被拒绝而抛出的异常
+ * AccessDeniedException 主要是在用户在访问受保护资源时被拒绝而抛出的异常  403
  *
  * @author: wuyifan
  * @since: 2019年12月10日 下午3:13
