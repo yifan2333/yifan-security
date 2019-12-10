@@ -18,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.yifan.filter.JsonLoginPostProcessor;
@@ -35,6 +37,8 @@ import com.yifan.service.UserDetailsService;
 public class CustomSpringBootWebSecurityConfiguration {
 
     public static final String LOGIN_PROCESSING_URL = "/process";
+
+
 
     /**
      * 配置json登录
@@ -65,6 +69,12 @@ public class CustomSpringBootWebSecurityConfiguration {
 
         @Resource
         private PreLoginFilter preLoginFilter;
+
+        @Resource
+        private AuthenticationSuccessHandler authenticationSuccessHandler;
+
+        @Resource
+        private AuthenticationFailureHandler authenticationFailureHandler;
 
         /**
          * 用来配置认证管理器 AuthenticationManager
@@ -112,8 +122,9 @@ public class CustomSpringBootWebSecurityConfiguration {
                     .addFilterBefore(preLoginFilter, UsernamePasswordAuthenticationFilter.class)
                     .formLogin()
                     .loginProcessingUrl(LOGIN_PROCESSING_URL)
-                    .successForwardUrl("/login/success")
-                    .failureForwardUrl("/login/failure")
+//                    .successForwardUrl("/login/success")
+//                    .failureForwardUrl("/login/failure")
+                    .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler)
                     .and()
                     .logout()
                     .addLogoutHandler(new CustomLogoutHandler())
