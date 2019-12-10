@@ -27,6 +27,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String username = authentication.getName();
         log.info("username: {}  is offline now", username);
+        response.setStatus(HttpServletResponse.SC_OK);
         ResponseUtils.responseJsonWriter(response, new ActionResult.Builder<String>().message("退出成功").build());
     }
 }

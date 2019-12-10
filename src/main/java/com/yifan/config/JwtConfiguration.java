@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -94,7 +96,7 @@ public class JwtConfiguration {
 
             map.put("access_token", jwtTokenPair.getAccessToken());
             map.put("refresh_token", jwtTokenPair.getRefreshToken());
-
+            response.setStatus(HttpServletResponse.SC_OK);
             ResponseUtils.responseJsonWriter(response, new ActionResult.Builder<Map<String, Object>>().data(map).message("登陆成功").build());
         };
     }
@@ -115,6 +117,7 @@ public class JwtConfiguration {
 
             map.put("time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             map.put("flag", "failure_login");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             ResponseUtils.responseJsonWriter(response, new ActionResult.Builder<Map<String, Object>>().data(map).code(401).message("认证失败").build());
         };
     }

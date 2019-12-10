@@ -19,7 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 public class ResponseUtils {
 
     public static void responseJsonWriter(HttpServletResponse response, Object object) throws IOException {
-        response.setStatus(HttpServletResponse.SC_OK);
+
         response.setCharacterEncoding("utf-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         PrintWriter printWriter = response.getWriter();
