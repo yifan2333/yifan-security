@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenGenerator {
     private static final String JWT_EXP_KEY = "exp";
-    private JwtPayloadBuilder jwtPayloadBuilder = new JwtPayloadBuilder();
     private JwtProperties jwtProperties;
 
     private JwtTokenStorage jwtTokenStorage;
@@ -80,7 +79,7 @@ public class JwtTokenGenerator {
      * @return the string
      */
     private String jwtToken(String aud, int exp, Set<String> roles, Map<String, String> additional) {
-        String payload = jwtPayloadBuilder
+        String payload = new JwtPayloadBuilder()
                 .iss(jwtProperties.getIss())
                 .sub(jwtProperties.getSub())
                 .aud(aud)

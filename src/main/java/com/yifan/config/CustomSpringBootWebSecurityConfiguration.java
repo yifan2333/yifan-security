@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -22,11 +23,18 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.yifan.entrypoint.SimpleAccessDeniedHandler;
+import com.yifan.entrypoint.SimpleAuthenticationEntryPoint;
 import com.yifan.filter.JsonLoginPostProcessor;
+import com.yifan.filter.JwtAuthenticationFilter;
+import com.yifan.filter.JwtRefreshTokenFilter;
 import com.yifan.filter.LoginPostProcessor;
 import com.yifan.filter.PreLoginFilter;
 import com.yifan.handler.CustomLogoutHandler;
 import com.yifan.handler.CustomLogoutSuccessHandler;
+import com.yifan.jwt.JwtRefreshProcessor;
+import com.yifan.jwt.JwtTokenGenerator;
+import com.yifan.jwt.JwtTokenStorage;
 import com.yifan.service.UserDetailsService;
 
 
@@ -63,9 +71,41 @@ public class CustomSpringBootWebSecurityConfiguration {
         return new PreLoginFilter(LOGIN_PROCESSING_URL, loginPostProcessors);
     }
 
+    /**
+     * Jwt 认证过滤器.
+     *
+     * @param jwtTokenGenerator jwt 工具类 负责 生成 验证 解析
+     * @param jwtTokenStorage   jwt 缓存存储接口
+     * @return the jwt authentication filter
+     */
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenGenerator jwtTokenGenerator, JwtTokenStorage jwtTokenStorage) {
+        return new JwtAuthenticationFilter(jwtTokenGenerator, jwtTokenStorage);
+    }
+
+    /**
+     * Jwt 刷新token过滤器.
+     *
+     * @param jwtTokenGenerator jwtTokenGenerator
+     * @param jwtRefreshProcessor jwtRefreshProcessor
+     * @return com.yifan.filter.JwtRefreshTokenFilter
+     * @author wuyifan
+     * @date 2019年12月11日 上午11:59
+     */
+    @Bean
+    public JwtRefreshTokenFilter jwtRefreshTokenFilter(JwtTokenGenerator jwtTokenGenerator, JwtRefreshProcessor jwtRefreshProcessor, JwtTokenStorage jwtTokenStorage) {
+        return new JwtRefreshTokenFilter(jwtRefreshProcessor, jwtTokenGenerator, jwtTokenStorage);
+    }
+
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER)
     static class  DefaultConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+        @Resource
+        private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+        @Resource
+        private JwtRefreshTokenFilter jwtRefreshTokenFilter;
 
         @Resource
         private PreLoginFilter preLoginFilter;
@@ -116,14 +156,22 @@ public class CustomSpringBootWebSecurityConfiguration {
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
                     .cors()
+                    .and()
+                    // session 生成策略用无状态策略
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     // 这个配置在用户没有认证或者没有授权时可以返回错误码以及对应的信息
                     // 我们测试需要如果没有认证的话需要跳转form表单登录页面,就先删除
-//                    .and()
-//                    .exceptionHandling().accessDeniedHandler(new SimpleAccessDeniedHandler()).authenticationEntryPoint(new SimpleAuthenticationEntryPoint())
+                    .and()
+                    .exceptionHandling().accessDeniedHandler(new SimpleAccessDeniedHandler()).authenticationEntryPoint(new SimpleAuthenticationEntryPoint())
                     .and()
                     .authorizeRequests().anyRequest().authenticated()
                     .and()
                     .addFilterBefore(preLoginFilter, UsernamePasswordAuthenticationFilter.class)
+                    // jwt 必须配置于 UsernamePasswordAuthenticationFilter 之前
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                    .addFilterBefore(jwtRefreshTokenFilter, JwtAuthenticationFilter.class)
+
                     .formLogin()
                     .loginProcessingUrl(LOGIN_PROCESSING_URL)
 //                    .successForwardUrl("/login/success")

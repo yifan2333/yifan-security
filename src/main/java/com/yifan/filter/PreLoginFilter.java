@@ -19,6 +19,8 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.yifan.enums.LoginTypeEnum;
 
+import lombok.extern.slf4j.Slf4j;
+
 import static org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_PASSWORD_KEY;
 import static org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
 
@@ -31,6 +33,7 @@ import static org.springframework.security.web.authentication.UsernamePasswordAu
  * @since: 2019年12月06日 上午11:10
  * @version 1.0
  */
+@Slf4j
 public class PreLoginFilter extends GenericFilterBean {
     private static final String LOGIN_TYPE_KEY = "login_type";
 
@@ -88,6 +91,7 @@ public class PreLoginFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        log.info("url {}", ((HttpServletRequest) request).getRequestURI());
         ParameterRequestWrapper parameterRequestWrapper = new ParameterRequestWrapper((HttpServletRequest) request);
         if (requiresAuthenticationRequestMatcher.matches((HttpServletRequest) request)) {
             LoginTypeEnum typeFromReq = getTypeFromReq(request);

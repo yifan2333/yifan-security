@@ -95,9 +95,13 @@ public class JwtPayloadBuilder {
         payload.put("exp", this.exp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         payload.put("iat", this.iat.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         payload.put("jti", this.jti);
-
+        System.out.println(jti);
+        if (additional == null) {
+            additional = new HashMap<>();
+        }
+        additional.put("photoId", "12345648955488");
         if (!CollectionUtils.isEmpty(additional)) {
-            payload.putAll(additional);
+            payload.put("additional", JSONObject.toJSONString(additional));
         }
         payload.put("roles", JSONObject.toJSONString(this.roles));
         return JSONObject.toJSONString(payload);

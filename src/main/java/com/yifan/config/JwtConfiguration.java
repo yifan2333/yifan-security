@@ -15,12 +15,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.CollectionUtils;
 
 import com.yifan.entity.ActionResult;
 import com.yifan.jwt.JwtProperties;
+import com.yifan.jwt.JwtRefreshProcessor;
 import com.yifan.jwt.JwtTokenCacheStorage;
 import com.yifan.jwt.JwtTokenGenerator;
 import com.yifan.jwt.JwtTokenPair;
@@ -63,6 +65,11 @@ public class JwtConfiguration {
     @Bean
     public JwtTokenGenerator jwtTokenGenerator(JwtTokenStorage jwtTokenStorage, JwtProperties jwtProperties) {
         return new JwtTokenGenerator(jwtTokenStorage, jwtProperties);
+    }
+
+    @Bean
+    public JwtRefreshProcessor jwtRefreshProcessor(JwtTokenGenerator jwtTokenGenerator, JwtTokenStorage jwtTokenStorage, UserDetailsManager userDetailsManager) {
+        return new JwtRefreshProcessor(jwtTokenGenerator, jwtTokenStorage, userDetailsManager);
     }
 
     /**

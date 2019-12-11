@@ -34,5 +34,4 @@ public interface JwtTokenStorage {
      * @return the jwt token pair
      */
     JwtTokenPair get(String userId);
-
 }
