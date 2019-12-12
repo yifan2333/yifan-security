@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.yifan.entity.ActionResult;
+import com.yifan.entity.TokenResultDto;
 import com.yifan.entrypoint.SimpleAuthenticationEntryPoint;
 import com.yifan.jwt.JwtPayload;
 import com.yifan.jwt.JwtRefreshProcessor;
@@ -100,11 +101,14 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
                 log.debug("refresh token : {}  is  not in matched", jwtToken);
                 throw new BadCredentialsException("refresh token is not matched");
             }
-
             JwtTokenPair jwtTokenPair = jwtRefreshProcessor.refresh(username);
+            TokenResultDto dto = new TokenResultDto();
+            dto.setFlag("success_login");
+            dto.setAccess_token(jwtTokenPair.getAccessToken());
+            dto.setRefresh_token(jwtTokenPair.getRefreshToken());
             AuthenticationUtils.authSuccess(request, jwtPayload);
             response.setStatus(HttpServletResponse.SC_OK);
-            ResponseUtils.responseJsonWriter(response, new ActionResult.Builder<>().data(jwtTokenPair).build());
+            ResponseUtils.responseJsonWriter(response, new ActionResult.Builder<>().data(dto).build());
         } else {
             // token 不匹配
             log.debug("refresh_token : {}  is  not in matched", jwtToken);
