@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -21,7 +20,6 @@ import com.alibaba.fastjson.JSONObject;
  **/
 public class JwtPayloadBuilder {
 
-    private Map<String, String> payload = new HashMap<>();
     /**
      * 附加的属性
      */
@@ -89,21 +87,20 @@ public class JwtPayloadBuilder {
     }
 
     public String builder() {
-        payload.put("iss", this.iss);
-        payload.put("sub", this.sub);
-        payload.put("aud", this.aud);
-        payload.put("exp", this.exp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        payload.put("iat", this.iat.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        payload.put("jti", this.jti);
-        System.out.println(jti);
         if (additional == null) {
             additional = new HashMap<>();
         }
         additional.put("photoId", "12345648955488");
-        if (!CollectionUtils.isEmpty(additional)) {
-            payload.put("additional", JSONObject.toJSONString(additional));
-        }
-        payload.put("roles", JSONObject.toJSONString(this.roles));
-        return JSONObject.toJSONString(payload);
+
+        JwtPayload jwtPayload = new JwtPayload();
+        jwtPayload.setIss(this.iss);
+        jwtPayload.setSub(this.sub);
+        jwtPayload.setAud(this.aud);
+        jwtPayload.setExp(this.exp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        jwtPayload.setJti(this.jti);
+        jwtPayload.setAdditional(additional);
+        jwtPayload.setRoles(JSONObject.toJSONString(this.roles));
+
+        return JSONObject.toJSONString(jwtPayload);
     }
 }

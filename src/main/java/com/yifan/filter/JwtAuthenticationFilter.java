@@ -1,7 +1,6 @@
 package com.yifan.filter;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 import javax.servlet.FilterChain;
@@ -13,23 +12,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.yifan.entrypoint.SimpleAuthenticationEntryPoint;
+import com.yifan.jwt.JwtPayload;
 import com.yifan.jwt.JwtTokenGenerator;
 import com.yifan.jwt.JwtTokenPair;
 import com.yifan.jwt.JwtTokenStorage;
+import com.yifan.utils.AuthenticationUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,47 +90,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void authenticationTokenHandle(String jwtToken, HttpServletRequest request) throws AuthenticationException {
 
         // 根据我的实现 有效token才会被解析出来
-        JSONObject jsonObject = jwtTokenGenerator.decodeAndVerify(jwtToken);
+        JwtPayload jwtPayload = jwtTokenGenerator.decodeAndVerify(jwtToken);
 
-        if (Objects.nonNull(jsonObject)) {
-            String username = jsonObject.getString("aud");
+        if (Objects.nonNull(jwtPayload)) {
+            String username = jwtPayload.getAud();
 
             // 从缓存获取 token
             JwtTokenPair jwtTokenPair = jwtTokenStorage.get(username);
             if (Objects.isNull(jwtTokenPair)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("token : {}  is  not in cache", jwtToken);
-                }
+                log.debug("token : {}  is  not in cache", jwtToken);
                 // 缓存中不存在就算 失败了
                 throw new CredentialsExpiredException("token is not in cache");
             }
             String accessToken = jwtTokenPair.getAccessToken();
-
             if (jwtToken.equals(accessToken)) {
-                // 解析 权限集合  这里
-                JSONArray jsonArray = jsonObject.getJSONArray("roles");
-
-                String roles = jsonArray.toString();
-
-                List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
-                User user = new User(username, "[PROTECTED]", authorities);
-                // 构建用户认证token
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user, null, authorities);
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // 放入安全上下文中
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                AuthenticationUtils.authSuccess(request, jwtPayload);
             } else {
-                // token 不匹配
-                if (log.isDebugEnabled()){
-                    log.debug("token : {}  is  not in matched", jwtToken);
-                }
-
+                log.debug("token : {}  is  not in matched", jwtToken);
                 throw new BadCredentialsException("token is not matched");
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug("token : {}  is  invalid", jwtToken);
-            }
+            log.debug("token : {}  is  invalid", jwtToken);
             throw new BadCredentialsException("token is invalid");
         }
     }

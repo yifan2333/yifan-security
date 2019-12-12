@@ -27,9 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class JwtTokenGenerator {
-    private static final String JWT_EXP_KEY = "exp";
     private JwtProperties jwtProperties;
-
     private JwtTokenStorage jwtTokenStorage;
     private KeyPair keyPair;
 
@@ -47,7 +45,9 @@ public class JwtTokenGenerator {
         this.keyPair = keyPairFactory.create(jwtProperties.getKeyLocation(), jwtProperties.getKeyAlias(), jwtProperties.getKeyPass());
     }
 
-
+    public JwtTokenPair jwtTokenPair(JwtPayload jwtPayload) {
+        return jwtTokenPair(jwtPayload.getAud(), jwtPayload.roles(), jwtPayload.getAdditional());
+    }
     /**
      * Jwt token pair jwt token pair.
      *
@@ -100,19 +100,19 @@ public class JwtTokenGenerator {
      * @param jwtToken the jwt token
      * @return the jwt claims
      */
-    public JSONObject decodeAndVerify(String jwtToken) {
+    public JwtPayload decodeAndVerify(String jwtToken) {
         Assert.hasText(jwtToken, "jwt token must not be bank");
         RSAPublicKey rsaPublicKey = (RSAPublicKey) this.keyPair.getPublic();
         SignatureVerifier rsaVerifier = new RsaVerifier(rsaPublicKey);
         Jwt jwt = JwtHelper.decodeAndVerify(jwtToken, rsaVerifier);
         String claims = jwt.getClaims();
-        JSONObject jsonObject = JSONObject.parseObject(claims);
-        String exp = jsonObject.getString(JWT_EXP_KEY);
+        JwtPayload jwtPayload = JSONObject.parseObject(claims, JwtPayload.class);
+        String exp = jwtPayload.getExp();
 
         if (isExpired(exp)) {
             throw new IllegalStateException("jwt token is expired");
         }
-        return jsonObject;
+        return jwtPayload;
     }
 
     /**

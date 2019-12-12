@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSONObject;
 import com.yifan.entity.ActionResult;
+import com.yifan.jwt.JwtPayload;
 import com.yifan.jwt.JwtTokenGenerator;
 
 /** 
@@ -24,10 +24,10 @@ public class DecodeController {
     private JwtTokenGenerator jwtTokenGenerator;
 
     @GetMapping("decode")
-    public ActionResult<JSONObject> decode(@RequestParam String jwtToken) {
-        JSONObject object = jwtTokenGenerator.decodeAndVerify(jwtToken);
+    public ActionResult<JwtPayload> decode(@RequestParam String jwtToken) {
+        JwtPayload object = jwtTokenGenerator.decodeAndVerify(jwtToken);
 
-        return new ActionResult.Builder<JSONObject>().data(object).build();
+        return new ActionResult.Builder<JwtPayload>().data(object).build();
     }
 
 }

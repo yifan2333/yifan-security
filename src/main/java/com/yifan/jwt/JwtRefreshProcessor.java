@@ -1,16 +1,5 @@
 package com.yifan.jwt;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.UserDetailsManager;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
 /** 
  * 
  *
@@ -22,12 +11,10 @@ public class JwtRefreshProcessor {
 
     private JwtTokenGenerator jwtTokenGenerator;
     private JwtTokenStorage jwtTokenStorage;
-    private UserDetailsManager userDetailsManager;
 
-    public JwtRefreshProcessor(JwtTokenGenerator jwtTokenGenerator, JwtTokenStorage jwtTokenStorage, UserDetailsManager userDetailsManager) {
+    public JwtRefreshProcessor(JwtTokenGenerator jwtTokenGenerator, JwtTokenStorage jwtTokenStorage) {
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.jwtTokenStorage = jwtTokenStorage;
-        this.userDetailsManager = userDetailsManager;
     }
 
     public JwtTokenPair refresh(String userId) {
@@ -36,26 +23,9 @@ public class JwtRefreshProcessor {
         if (old == null) {
             return null;
         }
-
-        JSONObject object = jwtTokenGenerator.decodeAndVerify(old.getRefreshToken());
-
-        String aud = object.getString("aud");
-        String roles = object.getString("roles");
-        Set<String> set = new HashSet<>(JSONArray.parseArray(roles, String.class));
-        String add = object.getString("additional");
-        Map<String, String> map = JSONObject.parseObject(add, Map.class);
-        JwtTokenPair jwtTokenPair = jwtTokenGenerator.jwtTokenPair(aud, set, map);
-
-
-//        Authentication authentication = getAuthentication(aud);
-//        SecurityContext context = SecurityContextHolder.createEmptyContext();
-//        context.setAuthentication(authentication);
-//        SecurityContextHolder.setContext(context);
-        return jwtTokenPair;
-    }
-
-    private UsernamePasswordAuthenticationToken getAuthentication(String aud) {
-        UserDetails user = userDetailsManager.loadUserByUsername(aud);
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
+        // 解析refresh_token获取用户信息
+        JwtPayload jwtPayload = jwtTokenGenerator.decodeAndVerify(old.getRefreshToken());
+        // 根据用户信息重新生成token,并保存到缓存中
+        return jwtTokenGenerator.jwtTokenPair(jwtPayload);
     }
 }
