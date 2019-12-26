@@ -27,6 +27,7 @@ public class UserDetailsService {
     @Resource
     private UserRepository userRepository;
 
+    @Resource
     private AuthenticationManager authenticationManager;
 
     public SysUser queryByUsername(String username){
