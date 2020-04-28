@@ -27,9 +27,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class JwtTokenGenerator {
-    private JwtProperties jwtProperties;
-    private JwtTokenStorage jwtTokenStorage;
-    private KeyPair keyPair;
+    private final JwtProperties jwtProperties;
+    private final JwtTokenStorage jwtTokenStorage;
+    private final KeyPair keyPair;
 
     /**
      * Instantiates a new Jwt token generator.
@@ -121,7 +121,7 @@ public class JwtTokenGenerator {
      * @param exp the jwt token exp
      * @return the boolean
      */
-    private boolean isExpired(String exp) {
+    public boolean isExpired(String exp) {
         return LocalDateTime.now().isAfter(LocalDateTime.parse(exp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 }

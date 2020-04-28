@@ -1,7 +1,7 @@
 package com.yifan.jwt;
 
 /** 
- * 
+ * JWT 刷新类
  *
  * @author: wuyifan
  * @since: 2019年12月11日 上午11:26
@@ -9,8 +9,8 @@ package com.yifan.jwt;
  */
 public class JwtRefreshProcessor {
 
-    private JwtTokenGenerator jwtTokenGenerator;
-    private JwtTokenStorage jwtTokenStorage;
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private final JwtTokenStorage jwtTokenStorage;
 
     public JwtRefreshProcessor(JwtTokenGenerator jwtTokenGenerator, JwtTokenStorage jwtTokenStorage) {
         this.jwtTokenGenerator = jwtTokenGenerator;

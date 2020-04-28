@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 
 /** 
- * 
+ * JwtPayload属性
  *
  * @author: wuyifan
  * @since: 2019年12月12日 上午11:12

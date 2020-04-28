@@ -43,7 +43,7 @@ public class JwtPayloadBuilder {
     /**
      * jwt的签发时间
      **/
-    private LocalDateTime iat = LocalDateTime.now();
+    private final LocalDateTime iat = LocalDateTime.now();
     /**
      * 权限集
      */
@@ -51,7 +51,7 @@ public class JwtPayloadBuilder {
     /**
      * jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击
      **/
-    private String jti = UUID.randomUUID().toString();
+    private final String jti = UUID.randomUUID().toString();
 
     public JwtPayloadBuilder iss(String iss) {
         this.iss = iss;
@@ -90,8 +90,6 @@ public class JwtPayloadBuilder {
         if (additional == null) {
             additional = new HashMap<>();
         }
-        additional.put("photoId", "12345648955488");
-
         JwtPayload jwtPayload = new JwtPayload();
         jwtPayload.setIss(this.iss);
         jwtPayload.setSub(this.sub);
