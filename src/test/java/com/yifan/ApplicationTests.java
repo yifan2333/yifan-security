@@ -10,6 +10,12 @@ import javax.annotation.Resource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alibaba.fastjson.JSONObject;
@@ -76,4 +82,13 @@ public class ApplicationTests {
 	}
 
 
+	@Test
+	public void passwordEncoderTest() {
+		PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+		System.out.println(delegatingPasswordEncoder.encode("wuyifanc"));
+
+		PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+		System.out.println(bCryptPasswordEncoder.encode("wuyifanc"));
+	}
 }
